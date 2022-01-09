@@ -35,6 +35,9 @@ export default function Theme() {
       },
     },
     typography: {
+      header: {
+        fontFamily: "Roboto, Helvetica, Arial, sans-serif;",
+      },
       fontFamily: "Oswald",
       fontSize: 18,
       fontWeightLight: 400,

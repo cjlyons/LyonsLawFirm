@@ -1,39 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Typography from "@material-ui/core/Typography";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import Logo from "./logo.jpg";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { Link } from "@material-ui/core";
-import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import Pages from "../Pages";
 import Theme from "../../Theme";
+import { DesktopNavBar, MobileNavBar } from "./NavBar";
 
 const theme = Theme();
 const useStyles = makeStyles({
   appbar: {
     background: theme.palette.background.header,
     color: theme.palette.text.header,
-  },
-  tabs: {
-    color: theme.palette.text.header,
-    "& .Mui-selected": {
-      color: theme.palette.text.header,
-    },
+    fontFamily: theme.typography.header.fontFamily,
   },
 });
 
 export default function Header() {
-  const pages = Pages();
-  const navigate = useNavigate();
-  const [value, setValue] = React.useState("/");
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    navigate(newValue);
-  };
+  const [state, setState] = useState({
+    mobileView: false,
+  });
+  const { mobileView } = state;
+  useEffect(() => {
+    const setResponsiveness = () => {
+      console.log(window.innerWidth);
+      return window.innerWidth < 750
+        ? setState((prevState) => ({ ...prevState, mobileView: true }))
+        : setState((prevState) => ({ ...prevState, mobileView: false }));
+    };
+
+    setResponsiveness();
+    window.addEventListener("resize", () => setResponsiveness());
+
+    return () => {
+      window.removeEventListener("resize", () => setResponsiveness());
+    };
+  }, []);
 
   const classes = useStyles();
   return (
@@ -46,40 +49,15 @@ export default function Header() {
         <Toolbar>
           <Box
             component="img"
-            alt="Your logo."
+            alt="Lyons Law Firm Logo - Dara Celtic Knot"
             src={Logo}
             sx={{ paddingRight: 4, paddingBottom: 1, paddingTop: 1 }}
           />
-          <Typography variant="h4" component="div">
+          <Typography className={classes.appbar} variant="h4" component="div">
             Lyons Law Firm
           </Typography>
           <Box sx={{ width: "50%" }}>
-            <Tabs
-              TabIndicatorProps={{
-                style: { backgroundColor: theme.palette.background.paper },
-              }}
-              className={classes.tabs}
-              value={value}
-              onChange={handleChange}
-              centered
-            >
-              <Tab
-                className={classes.tabs}
-                key="/"
-                label="Home"
-                value="/"
-                component={Link}
-              />
-              {pages.map((page) => (
-                <Tab
-                  className={classes.tabs}
-                  key={page.name}
-                  label={page.name}
-                  value={page.path}
-                  component={Link}
-                />
-              ))}
-            </Tabs>
+            {mobileView ? <MobileNavBar /> : <DesktopNavBar />}
           </Box>
         </Toolbar>
       </AppBar>
