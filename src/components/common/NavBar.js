@@ -82,7 +82,7 @@ export function MobileNavBar() {
 
   return (
     <Box
-      sx={{ flexGrow: 0, paddingLeft: 8, display: { xs: "block", md: "none" } }}
+      sx={{ flexGrow: 0, paddingLeft: 2, display: { xs: "block", md: "none" } }}
     >
       <Tooltip title="Open navigation menu">
         <IconButton
