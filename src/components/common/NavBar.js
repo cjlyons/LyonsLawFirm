@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from "react";
-import {
-  Toolbar,
-  makeStyles,
-  IconButton,
-  Drawer,
-  Link,
-  MenuItem,
-} from "@material-ui/core";
+import React, { useEffect } from "react";
+import { makeStyles, IconButton, Link, MenuItem } from "@material-ui/core";
+import Box from "@mui/material/Box";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Pages from "../Pages";
 import Theme from "../../Theme";
 import { useNavigate } from "react-router-dom";
+import Menu from "@mui/material/Menu";
 import MenuIcon from "@material-ui/icons/Menu";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import Typography from "@material-ui/core/Typography";
+import Tooltip from "@mui/material/Tooltip";
 
 const theme = Theme();
 const useStyles = makeStyles({
@@ -22,19 +19,6 @@ const useStyles = makeStyles({
     "& .Mui-selected": {
       color: theme.palette.text.header,
     },
-  },
-  menuButton: {
-    fontFamily: "Open Sans, sans-serif",
-    fontWeight: 700,
-    size: "18px",
-    marginLeft: "38px",
-  },
-  toolbar: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  drawerContainer: {
-    padding: "20px 30px",
   },
 });
 
@@ -56,72 +40,102 @@ export function DesktopNavBar() {
   const classes = useStyles();
 
   return (
-    <Tabs
-      TabIndicatorProps={{
-        style: { backgroundColor: theme.palette.background.paper },
-      }}
-      className={classes.tabs}
-      value={value}
-      onChange={handleChange}
-      centered
-    >
-      <Tab
+    <Box sx={{ width: "50%", display: { xs: "none", md: "block" } }}>
+      <Tabs
+        TabIndicatorProps={{
+          style: { backgroundColor: theme.palette.background.paper },
+        }}
         className={classes.tabs}
-        key="/"
-        label="Home"
-        value="/"
-        component={Link}
-      />
-      {pages.map((page) => (
+        value={value}
+        onChange={handleChange}
+        centered
+      >
         <Tab
           className={classes.tabs}
-          key={page.name}
-          label={page.name}
-          value={page.path}
+          key="/"
+          label="Home"
+          value="/"
           component={Link}
         />
-      ))}
-    </Tabs>
+        {pages.map((page) => (
+          <Tab
+            className={classes.tabs}
+            key={page.name}
+            label={page.name}
+            value={page.path}
+            component={Link}
+          />
+        ))}
+      </Tabs>
+    </Box>
   );
 }
 
 export function MobileNavBar() {
-  const [state, setState] = useState({
-    drawerOpen: false,
-  });
-  const { drawerOpen } = state;
   const pages = Pages();
-  const classes = useStyles();
-  const handleDrawerOpen = () =>
-    setState((prevState) => ({ ...prevState, drawerOpen: true }));
-  const handleDrawerClose = () =>
-    setState((prevState) => ({ ...prevState, drawerOpen: false }));
-  return (
-    <Toolbar className={classes.toolbar}>
-      <IconButton
-        {...{
-          edge: "start",
-          color: "inherit",
-          "aria-label": "menu",
-          "aria-haspopup": "true",
-          onClick: handleDrawerOpen,
-        }}
-      >
-        <MenuIcon />
-      </IconButton>
+  const navigate = useNavigate();
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
 
-      <Drawer anchor="left" open={drawerOpen} onClose={handleDrawerClose}>
-        <div className={classes.drawerContainer}>
-          <Link component={RouterLink} to="/" key="Home">
-            <MenuItem>Home</MenuItem>
-          </Link>
-          {pages.map((page) => (
-            <Link component={RouterLink} to={page.path} key={page.name}>
-              <MenuItem>{page.name}</MenuItem>
-            </Link>
-          ))}
-        </div>
-      </Drawer>
-    </Toolbar>
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  return (
+    <Box
+      sx={{ flexGrow: 0, paddingLeft: 8, display: { xs: "block", md: "none" } }}
+    >
+      <Tooltip title="Open navigation menu">
+        <IconButton
+          size="medium"
+          aria-label="account of current user"
+          aria-controls="menu-appbar"
+          aria-haspopup="true"
+          onClick={handleOpenNavMenu}
+          color="inherit"
+          sx={{ p: 0 }}
+        >
+          <MenuIcon />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorElNav}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorElNav)}
+        onClose={() => {
+          setAnchorElNav(null);
+        }}
+        sx={{ mt: "45px" }}
+      >
+        <MenuItem
+          key="/"
+          onClick={() => {
+            navigate("/");
+            setAnchorElNav(null);
+          }}
+        >
+          <Typography>Home</Typography>
+        </MenuItem>
+        {pages.map((page) => (
+          <MenuItem
+            key={page.id}
+            onClick={() => {
+              navigate(page.path);
+              setAnchorElNav(null);
+            }}
+          >
+            <Typography>{page.name}</Typography>
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
   );
 }

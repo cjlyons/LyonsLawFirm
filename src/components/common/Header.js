@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Typography from "@material-ui/core/Typography";
 import Toolbar from "@mui/material/Toolbar";
@@ -18,26 +18,6 @@ const useStyles = makeStyles({
 });
 
 export default function Header() {
-  const [state, setState] = useState({
-    mobileView: false,
-  });
-  const { mobileView } = state;
-  useEffect(() => {
-    const setResponsiveness = () => {
-      console.log(window.innerWidth);
-      return window.innerWidth < 750
-        ? setState((prevState) => ({ ...prevState, mobileView: true }))
-        : setState((prevState) => ({ ...prevState, mobileView: false }));
-    };
-
-    setResponsiveness();
-    window.addEventListener("resize", () => setResponsiveness());
-
-    return () => {
-      window.removeEventListener("resize", () => setResponsiveness());
-    };
-  }, []);
-
   const classes = useStyles();
   return (
     <Box sx={{ paddingBottom: 2 }}>
@@ -56,9 +36,8 @@ export default function Header() {
           <Typography className={classes.appbar} variant="h4" component="div">
             Lyons Law Firm
           </Typography>
-          <Box sx={{ width: "50%" }}>
-            {mobileView ? <MobileNavBar /> : <DesktopNavBar />}
-          </Box>
+          <DesktopNavBar />
+          <MobileNavBar />
         </Toolbar>
       </AppBar>
     </Box>
